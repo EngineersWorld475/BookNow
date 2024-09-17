@@ -1,8 +1,47 @@
-import { Button, Label, TextInput } from 'flowbite-react';
-import React, { useEffect, useRef } from 'react';
-
+import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  signInSuccess,
+  signInFailure,
+  signInStart,
+} from '../redux/user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 const Signin = () => {
   const inputRef = useRef();
+  const [formData, setFormData] = useState({});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error: errorMessage } = useSelector(
+    (state) => state.booknowuser
+  );
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.email || !formData.password) {
+      dispatch(signInFailure('Please fill all the fields'));
+    }
+    try {
+      dispatch(signInStart());
+      const res = await fetch(`/api/users/sign-in`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.error) {
+        return dispatch(signInFailure(data.error));
+      }
+      dispatch(signInSuccess(data));
+      navigate('/');
+    } catch (error) {
+      return dispatch(signInFailure(error.message));
+    }
+  };
 
   useEffect(() => {
     inputRef.current.focus();
@@ -14,7 +53,7 @@ const Signin = () => {
           Sign in or create an account
         </h3>
 
-        <div className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <Label value="Email address" />
             <TextInput
@@ -23,6 +62,7 @@ const Signin = () => {
               placeholder="Enter your email address"
               className="mt-1"
               ref={inputRef}
+              onChange={handleChange}
             />
           </div>
           <div>
@@ -32,14 +72,32 @@ const Signin = () => {
               id="password"
               placeholder="Enter a password"
               className="mt-1"
+              onChange={handleChange}
             />
           </div>
 
           <div className="mt-4">
-            <Button className="w-full">Create account</Button>
+            <Button type="submit" className="w-full">
+              {loading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="pl-3">Loading...</span>
+                </>
+              ) : (
+                'Create account'
+              )}
+            </Button>
           </div>
-        </div>
+        </form>
       </div>
+      {errorMessage && (
+        <Alert
+          color={'failure'}
+          className="flex justify-center items-center w-full mt-5 "
+        >
+          {errorMessage}
+        </Alert>
+      )}
     </div>
   );
 };

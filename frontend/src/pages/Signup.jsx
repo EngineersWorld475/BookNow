@@ -21,11 +21,13 @@ const Signup = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (!res.ok) {
+      if (data.error) {
+        console.log(data);
         setLoading(false);
-        setError(data.message);
+        setError(data.error);
+      } else {
+        navigate('/login');
       }
-      navigate('/login');
     } catch (error) {
       setLoading(false);
       setError(error.message);
@@ -109,12 +111,15 @@ const Signup = () => {
             </Button>
           </div>
         </form>
-        {error && (
-          <Alert color="failure" className="mt-3">
-            {error}
-          </Alert>
-        )}
       </div>
+      {error && (
+        <Alert
+          color="failure"
+          className="flex justify-center items-center mt-5 w-full "
+        >
+          {error}
+        </Alert>
+      )}
     </div>
   );
 };

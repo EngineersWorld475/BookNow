@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const dbConnect = require('./config/dbConnect');
-const { notFound, errorHandler } = require('./middlewares/authMiddleware');
+const { notFound, errorHandler } = require('./middlewares/errorHandler');
 const authRouter = require('./routes/authRoutes');
 dotenv.config();
 dbConnect();
