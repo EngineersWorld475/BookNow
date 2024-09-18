@@ -74,11 +74,12 @@ const signInUser = asyncHandler(async (req, res) => {
     });
     const token = generateToken(existingUser._id);
     return res.status(200).json({
-      username: existingUser?.username,
-      email: existingUser?.email,
-      address: existingUser?.address,
-      isBlocked: existingUser?.isBlocked,
-      profilePicture: existingUser?.profilePicture,
+      username: updatedUser?.username,
+      email: updatedUser?.email,
+      address: updatedUser?.address,
+      isBlocked: updatedUser?.isBlocked,
+      profilePicture: updatedUser?.profilePicture,
+      refreshToken: updatedUser?.refreshToken,
       token: token,
     });
   } else {
@@ -86,4 +87,36 @@ const signInUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { signupUser, signInUser };
+//sign out user
+const signOutUser = asyncHandler(async (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies.refreshToken) {
+    throw new Error('No refresh token in cookies');
+  }
+  const refreshToken = cookies.refreshToken;
+  const user = await User.findOne({ refreshToken });
+  if (!user) {
+    req.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+    });
+    return res.sendStatus(204); //forbidden
+  }
+  const updatedUser = await User.findOneAndUpdate(
+    { refreshToken },
+    {
+      $set: {
+        refreshToken: '',
+      },
+    },
+    { new: true }
+  );
+  console.log('....updatedUser', updatedUser);
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: true,
+  });
+  return res.status(200).json({ message: 'User logout successfully' });
+});
+
+module.exports = { signupUser, signInUser, signOutUser };

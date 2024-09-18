@@ -23,9 +23,12 @@ export const bookingUserSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+    signOutSuccess: (state) => {
+      (state.currentUser = null), (state.loading = false), (state.error = null);
+    },
   },
 });
 
-export const { signInStart, signInFailure, signInSuccess } =
+export const { signInStart, signInFailure, signInSuccess, signOutSuccess } =
   bookingUserSlice.actions;
 export default bookingUserSlice.reducer;
