@@ -193,7 +193,7 @@ const UserProfilePage = () => {
           ) : (
             <>
               <p className="text-gray-500">
-                {currentUser.phoneNumber
+                {currentUser
                   ? currentUser.phoneNumber
                   : `Add your phone number`}
               </p>
@@ -242,7 +242,7 @@ const UserProfilePage = () => {
           ) : (
             <>
               <p className="text-gray-500">
-                {currentUser.nationality
+                {currentUser
                   ? currentUser.nationality
                   : `Select the country/region you are from`}
               </p>
@@ -285,7 +285,7 @@ const UserProfilePage = () => {
           ) : (
             <>
               <p className="text-gray-500">
-                {currentUser.gender ? currentUser.gender : `Select your gender`}
+                {currentUser ? currentUser.gender : `Select your gender`}
               </p>
               <button
                 className="px-3 py-1 bg-blue-600 text-white font-semibold"
@@ -326,7 +326,7 @@ const UserProfilePage = () => {
           ) : (
             <>
               <p className="text-gray-500">
-                {currentUser.address ? currentUser.address : `Add your address`}
+                {currentUser ? currentUser.address : `Add your address`}
               </p>
               <button
                 className="px-3 py-1 bg-blue-600 text-white font-semibold"

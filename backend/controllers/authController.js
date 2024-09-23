@@ -74,7 +74,7 @@ const signInUser = asyncHandler(async (req, res) => {
     });
     const token = generateToken(existingUser._id);
     return res.status(200).json({
-      id: updatedUser?._id,
+      _id: updatedUser?._id,
       username: updatedUser?.username,
       email: updatedUser?.email,
       address: updatedUser?.address,
