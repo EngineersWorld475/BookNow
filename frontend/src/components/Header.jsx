@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Avatar, Dropdown, TextInput } from 'flowbite-react';
+import { Alert, Avatar, Dropdown, Spinner, TextInput } from 'flowbite-react';
 import { AiOutlineSearch } from 'react-icons/ai';
 import {
   FaPlane,
@@ -14,16 +14,17 @@ import {
 import { MdHotel, MdLocalTaxi } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { signOutSuccess } from '../redux/user/userSlice';
+import { signOutSuccess, signOutStart } from '../redux/user/userSlice';
 
 const Header = () => {
-  const { currentUser } = useSelector((state) => state.booknowuser);
+  const { currentUser, loading } = useSelector((state) => state.booknowuser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSignOut = async () => {
     try {
+      dispatch(signOutStart());
       const res = await fetch(`/api/users/logout`, {
         method: 'POST',
       });
@@ -68,13 +69,23 @@ const Header = () => {
                 arrowIcon={false}
                 inline
                 label={
-                  <Avatar alt="user" img={currentUser.profilePicture} rounded />
+                  loading ? (
+                    <Spinner size="sm" />
+                  ) : (
+                    <Avatar
+                      alt="user"
+                      img={currentUser.profilePicture}
+                      rounded
+                    />
+                  )
                 }
               >
-                <Dropdown.Header className="flex flex-row gap-4 cursor-pointer">
-                  <FaUserCircle size={15} />
-                  <p>Manage Account</p>
-                </Dropdown.Header>
+                <Link to="/user-account">
+                  <Dropdown.Header className="flex flex-row gap-4 cursor-pointer">
+                    <FaUserCircle size={15} />
+                    <p>Manage Account</p>
+                  </Dropdown.Header>
+                </Link>
                 <Link to="#">
                   <Dropdown.Item className="flex flex-row gap-4 cursor-pointer">
                     <FaSuitcase size={15} />

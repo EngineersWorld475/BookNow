@@ -74,12 +74,16 @@ const signInUser = asyncHandler(async (req, res) => {
     });
     const token = generateToken(existingUser._id);
     return res.status(200).json({
+      id: updatedUser?._id,
       username: updatedUser?.username,
       email: updatedUser?.email,
       address: updatedUser?.address,
       isBlocked: updatedUser?.isBlocked,
       profilePicture: updatedUser?.profilePicture,
       refreshToken: updatedUser?.refreshToken,
+      gender: updatedUser?.gender,
+      nationality: updatedUser?.nationality,
+      phoneNumber: updatedUser?.phoneNumber,
       token: token,
     });
   } else {
@@ -102,7 +106,7 @@ const signOutUser = asyncHandler(async (req, res) => {
     });
     return res.sendStatus(204); //forbidden
   }
-  const updatedUser = await User.findOneAndUpdate(
+  await User.findOneAndUpdate(
     { refreshToken },
     {
       $set: {
@@ -111,7 +115,6 @@ const signOutUser = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
-  console.log('....updatedUser', updatedUser);
   res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: true,
@@ -119,4 +122,45 @@ const signOutUser = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: 'User logout successfully' });
 });
 
-module.exports = { signupUser, signInUser, signOutUser };
+// update user
+const updateUser = asyncHandler(async (req, res) => {
+  const {
+    username,
+    email,
+    phoneNumber,
+    gender,
+    profilePicture,
+    nationality,
+    address,
+  } = req.body;
+  console.log(req.params.id);
+  console.log(req.user._id);
+  if (req.params.id !== req.user._id.toString()) {
+    throw new Error('You are not able to update this user');
+  }
+
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    throw new Error('User not found... please try again later');
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        username,
+        email,
+        phoneNumber,
+        nationality,
+        address,
+        gender,
+        profilePicture,
+      },
+    },
+    { new: true }
+  );
+  res.status(200).json(updatedUser);
+});
+
+module.exports = { signupUser, signInUser, signOutUser, updateUser };

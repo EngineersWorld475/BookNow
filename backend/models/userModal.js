@@ -33,6 +33,19 @@ const userSchema = new mongoose.Schema(
       default:
         'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1725926400&semt=ais_hybrid',
     },
+    phoneNumber: {
+      type: String,
+    },
+    nationality: {
+      type: String,
+    },
+    gender: {
+      type: String,
+    },
+    role: {
+      type: String,
+      default: 'user',
+    },
   },
   { timestamps: true }
 );
